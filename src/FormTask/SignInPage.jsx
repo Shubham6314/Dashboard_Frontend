@@ -1,10 +1,8 @@
 import * as React from "react";
-import { useContext } from "react";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import axios from "axios";
-import { userContext } from "./useContext";
 import { useForm } from "react-hook-form";
 import {
   FormHelperText,
@@ -18,12 +16,14 @@ import {
   Typography,
 } from "@mui/material";
 import { BASE_URL } from "./Constant";
+import { useDispatch } from "react-redux";
+import { increment } from "../ReduxData/Slice";
 
 const defaultTheme = createTheme();
 
 export default function SignInPage() {
-  const context = useContext(userContext);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const onHandleSubmit = async (data) => {
     try {
@@ -36,17 +36,22 @@ export default function SignInPage() {
         localStorage.setItem("token", token);
         localStorage.setItem("user", convertingJson);
         navigate("/dashboard");
-        context.setSnackbar({
-          state: true,
-          message: response.data.message,
-          severity: response.data.status,
-        });
+
+        dispatch(
+          increment({
+            state: true,
+            message: response.data.message,
+            severity: response.data.status,
+          })
+        );
       } else {
-        context.setSnackbar({
-          state: true,
-          message: response.data.message,
-          severity: response.data.status,
-        });
+        dispatch(
+          increment({
+            state: true,
+            message: response.data.message,
+            severity: response.data.status,
+          })
+        );
       }
     } catch (err) {
       console.log(err, "ERROR");

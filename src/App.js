@@ -13,11 +13,6 @@ import TrashUsers from "./FormTask/Trash";
 import ActiveUsers from "./FormTask/ActiveUsers";
 
 function App() {
-  const [snackbar, setSnackbar] = useState({
-    state: false,
-    message: null,
-    severity: null,
-  });
   const [user, setUser] = useState({});
   let userData = localStorage.getItem("user");
   useEffect(() => {
@@ -27,7 +22,7 @@ function App() {
   }, [userData]);
   return (
     <>
-      <userContext.Provider value={{ snackbar, setSnackbar, user, setUser }}>
+      <userContext.Provider value={{ user, setUser }}>
         <Routes>
           <Route path="/" element={<SignInPage />} />
           <Route path="/signup" element={<SignUpPage />} />
@@ -41,7 +36,7 @@ function App() {
             </Route>
           </Route>
         </Routes>
-        <SuccessSnackbar snackbar={snackbar} setSnackbar={setSnackbar} />
+        <SuccessSnackbar />
       </userContext.Provider>
     </>
   );

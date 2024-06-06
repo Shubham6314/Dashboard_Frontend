@@ -1,5 +1,5 @@
 import { Avatar } from "@mui/material";
-import { Card, Paper, Box, InputBase } from "@mui/material";
+import { Card, Paper, InputBase } from "@mui/material";
 import { styled } from "@mui/material";
 
 export const CustomCard = styled(Card)(() => ({

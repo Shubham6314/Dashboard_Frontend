@@ -1,10 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import MUIDataTable from "mui-datatables";
-import { Button, Box, Paper, Stack, Typography } from "@mui/material";
+import { Button, Box, Paper, Stack } from "@mui/material";
 import { ViewModal } from "./ViewProfile";
 import SearchIcon from "@mui/icons-material/Search";
-import AddIcon from "@mui/icons-material/Add";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { Search, SearchIconWrapper, StyledInputBase } from "./Styled";
 import "./index.css";
