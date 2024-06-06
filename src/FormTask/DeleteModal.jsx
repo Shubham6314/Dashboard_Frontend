@@ -4,6 +4,8 @@ import { useContext } from "react";
 import { userContext } from "./useContext";
 import axios from "axios";
 import { BASE_URL } from "./Constant";
+import { useDispatch } from "react-redux";
+import { increment } from "../ReduxData/Slice";
 
 const style = {
   position: "absolute",
@@ -19,6 +21,7 @@ const style = {
 
 export default function DeleteModal({ modal, closeModal, allData, userid }) {
   const context = useContext(userContext);
+  const dispatch = useDispatch();
   const permanentDelete = async () => {
     try {
       const response = await axios.delete(
@@ -26,19 +29,23 @@ export default function DeleteModal({ modal, closeModal, allData, userid }) {
       );
 
       if (response) {
-        context.setSnackbar({
-          state: true,
-          message: response.data.message,
-          severity: response.data.status,
-        });
+        dispatch(
+          increment({
+            state: true,
+            message: response.data.message,
+            severity: response.data.status,
+          })
+        );
         allData();
         closeModal();
       } else {
-        context.setSnackbar({
-          state: true,
-          message: response.data.message,
-          severity: response.data.status,
-        });
+        dispatch(
+          increment({
+            state: true,
+            message: response.data.message,
+            severity: response.data.status,
+          })
+        );
       }
     } catch (error) {
       console.log(" Error", error);

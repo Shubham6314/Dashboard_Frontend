@@ -1,4 +1,4 @@
-import { React, useState, useContext, useEffect } from "react";
+import { React, useState, useEffect } from "react";
 import {
   IconButton,
   Box,
@@ -12,13 +12,15 @@ import { icons } from "./Constant";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { BasicModal } from "./Modal";
 import axios from "axios";
-import { userContext } from "./useContext";
+// import { userContext } from "./useContext";
 import { CustomAvatar } from "./Styled";
 import EditIcon from "@mui/icons-material/Edit";
 import { BASE_URL } from "./Constant";
+import { useDispatch } from "react-redux";
+import { increment } from "../ReduxData/Slice";
 
 export default function ProfileCard() {
-  const context = useContext(userContext);
+  const dispatch = useDispatch();
   const [user, setUser] = useState({});
   const [image, setimage] = useState("");
   const [imgData, setImgData] = useState({
@@ -64,10 +66,12 @@ export default function ProfileCard() {
           }
           localStorage.setItem("user", JSON.stringify(user_img));
         } else {
-          context.setSnackbar({
-            state: true,
-            message: `Image size is too big`,
-          });
+          dispatch(
+            increment({
+              state: true,
+              message: "Image size is too big",
+            })
+          );
         }
       };
     } catch (error) {

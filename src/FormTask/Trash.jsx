@@ -3,9 +3,7 @@ import axios from "axios";
 import MUIDataTable from "mui-datatables";
 import { Button, Box } from "@mui/material";
 import "./index.css";
-import { ViewModal } from "./ViewProfile";
 import { userContext } from "./useContext";
-import { EditModal } from "./EditModal";
 import DeleteModal from "./DeleteModal";
 function TrashUsers() {
   const [data, setData] = useState([]);

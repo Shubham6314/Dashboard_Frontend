@@ -1,13 +1,15 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import MUIDataTable from "mui-datatables";
 import { Button, Box } from "@mui/material";
 import "./index.css";
 import { ViewModal } from "./ViewProfile";
-import { userContext } from "./useContext";
 import { EditModal } from "./EditModal";
 import { BASE_URL } from "./Constant";
+import { useDispatch } from "react-redux";
+import { increment } from "../ReduxData/Slice";
 function ActiveUsers() {
+  const dispatch = useDispatch();
   const [data, setData] = useState([]);
   const [view, setView] = useState("");
   const [edit, setEdit] = useState("");
@@ -20,7 +22,6 @@ function ActiveUsers() {
     setActiveEdit(true);
   };
   const handleCloseEdit = () => setActiveEdit(false);
-  const context = useContext(userContext);
   const handleOpen = (id) => {
     const user = data.find((ele) => ele._id === id);
     setView(user);
@@ -44,18 +45,22 @@ function ActiveUsers() {
   const softDelete = async (data) => {
     const response = await axios.put(`${BASE_URL}api/user/deleterestore`, data);
     if (response) {
-      context.setSnackbar({
-        state: true,
-        message: response.data.message,
-        severity: response.data.status,
-      });
+      dispatch(
+        increment({
+          state: true,
+          message: response.data.message,
+          severity: response.data.status,
+        })
+      );
       allData();
     } else {
-      context.setSnackbar({
-        state: true,
-        message: response.data.message,
-        severity: response.data.status,
-      });
+      dispatch(
+        increment({
+          state: true,
+          message: response.data.message,
+          severity: response.data.status,
+        })
+      );
     }
   };
 

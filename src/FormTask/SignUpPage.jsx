@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState, useContext, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import {
   Typography,
   Avatar,
@@ -15,10 +15,12 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import { FormControl, FormHelperText, Select, MenuItem } from "@mui/material";
-import { userContext } from "./useContext";
 import "./index.css";
 import { useForm } from "react-hook-form";
 import { BASE_URL } from "./Constant";
+import { useDispatch } from "react-redux";
+import { userContext } from "./useContext";
+import { increment } from "../ReduxData/Slice";
 
 const defaultTheme = createTheme();
 
@@ -28,8 +30,9 @@ export default function SignUpPage({
   edit,
   allData,
 }) {
-  const context = useContext(userContext);
   const [signUp, setSignUp] = useState({});
+  const dispatch = useDispatch();
+  const context = useContext(userContext);
 
   const location = useLocation();
   const path = location.pathname;
@@ -85,11 +88,13 @@ export default function SignUpPage({
       const response = await axios.post(`${BASE_URL}api/user/register`, data);
 
       if (response.data.token) {
-        context.setSnackbar({
-          state: true,
-          message: response.data.message,
-          severity: response.data.status,
-        });
+        dispatch(
+          increment({
+            state: true,
+            message: response.data.message,
+            severity: response.data.status,
+          })
+        );
         let token = response.data.token;
         let user = response.data.user;
         let convertingJson = JSON.stringify(user);
@@ -97,11 +102,13 @@ export default function SignUpPage({
         localStorage.setItem("user", convertingJson);
         navigate("/dashboard");
       } else {
-        context.setSnackbar({
-          state: true,
-          message: response.data.message,
-          severity: response.data.status,
-        });
+        dispatch(
+          increment({
+            state: true,
+            message: response.data.message,
+            severity: response.data.status,
+          })
+        );
       }
     } catch (err) {
       console.log(err, "ERROR");
@@ -128,11 +135,13 @@ export default function SignUpPage({
           context.setUser(localStorage.getItem("user"));
         }
 
-        context.setSnackbar({
-          state: true,
-          message: response.data.message,
-          severity: response.data.status,
-        });
+        dispatch(
+          increment({
+            state: true,
+            message: response.data.message,
+            severity: response.data.status,
+          })
+        );
 
         if (allData && edit) {
           allData();
@@ -140,11 +149,13 @@ export default function SignUpPage({
 
         edit ? handleCloseEdit() : handleClose();
       } else {
-        context.setSnackbar({
-          state: true,
-          message: response.data.message,
-          severity: response.data.status,
-        });
+        dispatch(
+          increment({
+            state: true,
+            message: response.data.message,
+            severity: response.data.status,
+          })
+        );
       }
     } catch (err) {
       console.log(err, "err");
