@@ -1,11 +1,12 @@
-import * as React from "react";
+import React from "react";
 import { Box, Button, Modal, Typography } from "@mui/material";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { userContext } from "./useContext";
 import axios from "axios";
 import { BASE_URL } from "./Constant";
 import { useDispatch } from "react-redux";
 import { increment } from "../ReduxData/Slice";
+import { useGetPermanentDeleteByNameMutation } from "../services/PermanentDeleteApi";
 
 const style = {
   position: "absolute",
@@ -20,20 +21,17 @@ const style = {
 };
 
 export default function DeleteModal({ modal, closeModal, allData, userid }) {
-  const context = useContext(userContext);
-  const dispatch = useDispatch();
-  const permanentDelete = async () => {
-    try {
-      const response = await axios.delete(
-        `${BASE_URL}api/user/permanentdelete?id=${userid}`
-      );
-
-      if (response) {
+  const [permanentDeleteApi, { data, isLoading, error }] =
+    useGetPermanentDeleteByNameMutation();
+  useEffect(() => {
+    if (isLoading) return;
+    if (data?.status === "success") {
+      if (data) {
         dispatch(
           increment({
             state: true,
-            message: response.data.message,
-            severity: response.data.status,
+            message: data?.message,
+            severity: data?.status,
           })
         );
         allData();
@@ -42,11 +40,18 @@ export default function DeleteModal({ modal, closeModal, allData, userid }) {
         dispatch(
           increment({
             state: true,
-            message: response.data.message,
-            severity: response.data.status,
+            message: data?.message,
+            severity: data?.status,
           })
         );
       }
+    }
+  }, [data, isLoading]);
+  const context = useContext(userContext);
+  const dispatch = useDispatch();
+  const permanentDelete = async () => {
+    try {
+      permanentDeleteApi({ id: userid });
     } catch (error) {
       console.log(" Error", error);
     }

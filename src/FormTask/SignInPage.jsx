@@ -1,8 +1,8 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
 import { useForm } from "react-hook-form";
 import {
   FormHelperText,
@@ -15,51 +15,17 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
-import { BASE_URL } from "./Constant";
 import { useDispatch } from "react-redux";
 import { increment } from "../ReduxData/Slice";
+import { useGetLoginByNameMutation } from "../services/Signin";
 
 const defaultTheme = createTheme();
 
 export default function SignInPage() {
+  const [logIn, { data, isLoading, error }] = useGetLoginByNameMutation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const onHandleSubmit = async (data) => {
-    try {
-      const response = await axios.post(`${BASE_URL}api/user/login`, data);
-
-      if (response.data.token) {
-        let token = response.data.token;
-        let user = response.data.user;
-        let convertingJson = JSON.stringify(user);
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", convertingJson);
-        navigate("/dashboard");
-
-        dispatch(
-          increment({
-            state: true,
-            message: response.data.message,
-            severity: response.data.status,
-          })
-        );
-      } else {
-        dispatch(
-          increment({
-            state: true,
-            message: response.data.message,
-            severity: response.data.status,
-          })
-        );
-      }
-    } catch (err) {
-      console.log(err, "ERROR");
-    }
-  };
-  const location = useLocation();
-  const path = location.pathname;
-  React.useEffect(() => {
+  useEffect(() => {
     let user = localStorage.getItem("user");
     user = JSON.parse(user);
     if (user) {
@@ -68,6 +34,46 @@ export default function SignInPage() {
       }
     }
   });
+  useEffect(() => {
+    if (isLoading) return;
+    if (data?.status === "success") {
+      if (data?.token) {
+        let token = data.token;
+        let user = data.user;
+        let convertingJson = JSON.stringify(user);
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", convertingJson);
+        navigate("/dashboard");
+
+        dispatch(
+          increment({
+            state: true,
+            message: data?.message,
+            severity: data?.status,
+          })
+        );
+      } else {
+        dispatch(
+          increment({
+            state: true,
+            message: data?.message,
+            severity: data?.status,
+          })
+        );
+      }
+    }
+  }, [data, isLoading]);
+
+  const onHandleSubmit = async (data) => {
+    try {
+      logIn({ body: data });
+    } catch (err) {
+      console.log(err, "ERROR");
+    }
+  };
+  const location = useLocation();
+  const path = location.pathname;
+
   const {
     register,
     handleSubmit,

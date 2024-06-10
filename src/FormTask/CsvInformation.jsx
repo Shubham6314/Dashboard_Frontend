@@ -6,10 +6,13 @@ import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { CsvWrapper, CardWrapper, CardContent } from "./Styled/CsvStyled";
 import { BASE_URL } from "./Constant";
+import { useLazyGetCsvFileQuery } from "../services/CsvFile";
 
 const CsvInformation = () => {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
+  const [getCsvFile, { data: csvFile }] = useLazyGetCsvFileQuery();
+
   useEffect(() => {
     const handleData = async () => {
       const response = await axios.get(`${BASE_URL}api/user/alldata`);
@@ -33,10 +36,7 @@ const CsvInformation = () => {
   }, []);
 
   const handleGetCSV = async (endPoint) => {
-    const response = await axios({
-      url: `${BASE_URL}api/user/${endPoint}`,
-      responseType: "blob",
-    }).then((response) => {
+    await getCsvFile({ value: endPoint }).then((response) => {
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement("a");
       link.href = url;
