@@ -21,6 +21,8 @@ import { BASE_URL } from "./Constant";
 import { useDispatch } from "react-redux";
 import { userContext } from "./useContext";
 import { increment } from "../ReduxData/Slice";
+import { useGetSignUpByNameMutation } from "../services/SIgnUp";
+import { useGetUpdateByNameMutation } from "../services/UpdateApi";
 
 const defaultTheme = createTheme();
 
@@ -30,6 +32,11 @@ export default function SignUpPage({
   edit,
   allData,
 }) {
+  const [signUpApi, { data, isLoading, error }] = useGetSignUpByNameMutation();
+  const [
+    updateApi,
+    { data: updateData, isLoading: updateLoading, error: updateError },
+  ] = useGetUpdateByNameMutation();
   const [signUp, setSignUp] = useState({});
   const dispatch = useDispatch();
   const context = useContext(userContext);
@@ -55,6 +62,66 @@ export default function SignUpPage({
       email: signUp?.email || user?.email,
     },
   });
+  useEffect(() => {
+    if (isLoading) return;
+    if (updateData?.status === "success") {
+      if (!edit || updateData?.user._id === user._id) {
+        localStorage.removeItem(user);
+        localStorage.setItem("user", JSON.stringify(updateData?.user));
+        context.setUser(localStorage.getItem("user"));
+      }
+
+      dispatch(
+        increment({
+          state: true,
+          message: updateData?.message,
+          severity: updateData?.status,
+        })
+      );
+
+      if (allData && edit) {
+        allData();
+      }
+
+      edit ? handleCloseEdit() : handleClose();
+    } else {
+      dispatch(
+        increment({
+          state: true,
+          message: updateData?.message,
+          severity: updateData?.status,
+        })
+      );
+    }
+  }, [updateData, updateLoading]);
+  useEffect(() => {
+    if (isLoading) return;
+    if (data?.status === "success") {
+      if (data?.token) {
+        dispatch(
+          increment({
+            state: true,
+            message: data?.message,
+            severity: data?.status,
+          })
+        );
+        let token = data?.token;
+        let user = data?.user;
+        let convertingJson = JSON.stringify(user);
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", convertingJson);
+        navigate("/dashboard");
+      } else {
+        dispatch(
+          increment({
+            state: true,
+            message: data?.message,
+            severity: data?.status,
+          })
+        );
+      }
+    }
+  }, [data, isLoading]);
 
   useEffect(() => {
     if (edit) {
@@ -85,78 +152,20 @@ export default function SignUpPage({
 
   const onHandleSubmit = async (data) => {
     try {
-      const response = await axios.post(`${BASE_URL}api/user/register`, data);
-
-      if (response.data.token) {
-        dispatch(
-          increment({
-            state: true,
-            message: response.data.message,
-            severity: response.data.status,
-          })
-        );
-        let token = response.data.token;
-        let user = response.data.user;
-        let convertingJson = JSON.stringify(user);
-        localStorage.setItem("token", token);
-        localStorage.setItem("user", convertingJson);
-        navigate("/dashboard");
-      } else {
-        dispatch(
-          increment({
-            state: true,
-            message: response.data.message,
-            severity: response.data.status,
-          })
-        );
-      }
+      signUpApi({ body: data });
     } catch (err) {
       console.log(err, "ERROR");
     }
   };
 
   const onHandleUpdate = async (data) => {
-    let token = localStorage.getItem("token");
     try {
-      let response = await axios.put(
-        `http://localhost:8080/api/user/update?id=${
-          edit ? edit._id : user["_id"]
-        }`,
-        data,
-        {
-          headers: { Authorization: "Bearer" + token },
-        }
-      );
-
-      if (response.data.status === "success") {
-        if (!edit || response.data.user._id === user._id) {
-          localStorage.removeItem(user);
-          localStorage.setItem("user", JSON.stringify(response.data.user));
-          context.setUser(localStorage.getItem("user"));
-        }
-
-        dispatch(
-          increment({
-            state: true,
-            message: response.data.message,
-            severity: response.data.status,
-          })
-        );
-
-        if (allData && edit) {
-          allData();
-        }
-
-        edit ? handleCloseEdit() : handleClose();
-      } else {
-        dispatch(
-          increment({
-            state: true,
-            message: response.data.message,
-            severity: response.data.status,
-          })
-        );
-      }
+      let token = localStorage.getItem("token");
+      updateApi({
+        id: edit ? edit._id : user["_id"],
+        body: data,
+        token: token,
+      });
     } catch (err) {
       console.log(err, "err");
     }

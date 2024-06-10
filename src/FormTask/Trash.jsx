@@ -5,7 +5,38 @@ import { Button, Box } from "@mui/material";
 import "./index.css";
 import { userContext } from "./useContext";
 import DeleteModal from "./DeleteModal";
+import { useDispatch } from "react-redux";
+import { increment } from "../ReduxData/Slice";
+import { useGetDeleteRestoreByNameMutation } from "../services/DeleteRestore";
 function TrashUsers() {
+  const dispatch = useDispatch();
+  const [restoreApi, { data: restoreData, isLoading, error }] =
+    useGetDeleteRestoreByNameMutation();
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (restoreData?.status === "success") {
+      if (restoreData) {
+        dispatch(
+          increment({
+            state: true,
+            message: "Restore Successfully",
+            severity: restoreData?.status,
+          })
+        );
+
+        allData();
+      } else {
+        dispatch(
+          increment({
+            state: true,
+            message: restoreData?.message,
+            severity: restoreData?.status,
+          })
+        );
+      }
+    }
+  }, [restoreData, isLoading]);
   const [data, setData] = useState([]);
   const [view, setView] = useState("");
   const [modal, setModal] = useState(false);
@@ -34,25 +65,7 @@ function TrashUsers() {
     }
   };
   const restore = async (data) => {
-    const response = await axios.put(
-      `http://localhost:8080/api/user/deleterestore`,
-      data
-    );
-    if (response) {
-      context.setSnackbar({
-        state: true,
-        message: "Restore Successfully",
-        severity: response.data.status,
-      });
-
-      allData();
-    } else {
-      context.setSnackbar({
-        state: true,
-        message: response.data.message,
-        severity: response.data.status,
-      });
-    }
+    restoreApi({ body: data });
   };
 
   useEffect(() => {

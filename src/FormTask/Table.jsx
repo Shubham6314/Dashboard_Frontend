@@ -7,9 +7,20 @@ import SearchIcon from "@mui/icons-material/Search";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import { Search, SearchIconWrapper, StyledInputBase } from "./Styled";
 import "./index.css";
+import { useLazyGetAllDataByNameQuery } from "../services/Alldata";
 
 import { userContext } from "./useContext";
 function NavbarHome(props) {
+  const [fetchAllData, { data: allDataa, isLoading, error }] =
+    useLazyGetAllDataByNameQuery();
+  useEffect(() => {
+    if (allDataa) {
+      setdata(allDataa);
+      setAllDataApi(allDataa);
+    } else {
+      console.log(allDataa);
+    }
+  }, [allDataa, isLoading]);
   const context = useContext(userContext);
   const [view, setView] = useState("");
   const [allDataApi, setAllDataApi] = useState([]);
@@ -37,15 +48,10 @@ function NavbarHome(props) {
 
   const allData = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:8080/api/user/alldata"
-      );
-      if (response.data) {
-        setdata(response.data);
-        setAllDataApi(response.data);
-      } else {
-        console.log(response);
-      }
+      // const response = await axios.get(
+      //   "http://localhost:8080/api/user/alldata"
+      // );
+      fetchAllData();
     } catch (error) {
       console.log(" Error", error);
     }

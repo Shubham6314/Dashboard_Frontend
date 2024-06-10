@@ -8,8 +8,34 @@ import { EditModal } from "./EditModal";
 import { BASE_URL } from "./Constant";
 import { useDispatch } from "react-redux";
 import { increment } from "../ReduxData/Slice";
+import { useGetDeleteRestoreByNameMutation } from "../services/DeleteRestore";
 function ActiveUsers() {
   const dispatch = useDispatch();
+  const [softdeleteApi, { data: apiData, isLoading, error }] =
+    useGetDeleteRestoreByNameMutation();
+  useEffect(() => {
+    if (isLoading) return;
+    if (apiData?.status === "success") {
+      if (apiData) {
+        dispatch(
+          increment({
+            state: true,
+            message: apiData?.message,
+            severity: apiData?.status,
+          })
+        );
+        allData();
+      } else {
+        dispatch(
+          increment({
+            state: true,
+            message: apiData?.message,
+            severity: apiData?.status,
+          })
+        );
+      }
+    }
+  }, [apiData, isLoading]);
   const [data, setData] = useState([]);
   const [view, setView] = useState("");
   const [edit, setEdit] = useState("");
@@ -43,25 +69,7 @@ function ActiveUsers() {
     }
   };
   const softDelete = async (data) => {
-    const response = await axios.put(`${BASE_URL}api/user/deleterestore`, data);
-    if (response) {
-      dispatch(
-        increment({
-          state: true,
-          message: response.data.message,
-          severity: response.data.status,
-        })
-      );
-      allData();
-    } else {
-      dispatch(
-        increment({
-          state: true,
-          message: response.data.message,
-          severity: response.data.status,
-        })
-      );
-    }
+    softdeleteApi({ body: data });
   };
 
   useEffect(() => {
