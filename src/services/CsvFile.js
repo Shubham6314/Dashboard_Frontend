@@ -5,7 +5,21 @@ export const csvDataApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: `${BASE_URL}` }),
   endpoints: (builders) => ({
     getCsvFile: builders.query({
-      query: ({ value }) => `/api/user/${value}`,
+      query: ({ value }) => ({
+        url: `/api/user/${value}`,
+        method: "GET",
+        responseHandler: async (response) => {
+          if (response.headers.get("Content-Type")?.includes("text/csv")) {
+            return response.text();
+          } else if (
+            response.headers.get("Content-Type")?.includes("application/pdf")
+          ) {
+            return response.blob();
+          } else {
+            return response.json();
+          }
+        },
+      }),
     }),
   }),
 });

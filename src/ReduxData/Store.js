@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import snackbarReducer from "../ReduxData/Slice";
+
 import loginApi from "../services/Signin";
 import signUpApi from "../services/SIgnUp";
 import deleteRestoreApi from "../services/DeleteRestore";
@@ -7,6 +8,7 @@ import permanentDeleteApi from "../services/PermanentDeleteApi";
 import allDataApi from "../services/Alldata";
 import updateApi from "../services/UpdateApi";
 import csvDataApi from "../services/CsvFile";
+import uploadImage from "../services/UploadImage";
 import { setupListeners } from "@reduxjs/toolkit/query";
 
 export const store = configureStore({
@@ -19,6 +21,7 @@ export const store = configureStore({
     [allDataApi.reducerPath]: allDataApi.reducer,
     [updateApi.reducerPath]: updateApi.reducer,
     [csvDataApi.reducerPath]: csvDataApi.reducer,
+    [uploadImage.reducerPath]: uploadImage.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -28,7 +31,8 @@ export const store = configureStore({
       permanentDeleteApi.middleware,
       allDataApi.middleware,
       updateApi.middleware,
-      csvDataApi.middleware
+      csvDataApi.middleware,
+      uploadImage.middleware
     ),
 });
 setupListeners(store.dispatch);

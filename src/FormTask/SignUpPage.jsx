@@ -16,7 +16,7 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import axios from "axios";
 import { FormControl, FormHelperText, Select, MenuItem } from "@mui/material";
 import "./index.css";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { BASE_URL } from "./Constant";
 import { useDispatch } from "react-redux";
 import { userContext } from "./useContext";
@@ -56,7 +56,7 @@ export default function SignUpPage({
 
     value,
   } = useForm({
-    mode: "onChange",
+    // mode: "onChange",
     defaultValues: {
       name: signUp?.name || user?.name,
       email: signUp?.email || user?.email,
@@ -339,6 +339,34 @@ export default function SignUpPage({
                         <MenuItem value={"user"}>User</MenuItem>
                       </Select>
                     </FormControl>
+                    {/* <Controller
+                    control={control}
+                    name="role" rules=
+                    {{
+                      required: "Role is required",
+                    }}
+                    render=
+                    {({ field: { onChange, value } }) => (
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        placeholder="Role type"
+                        name="role"
+                        error={Boolean(errors?.role)}
+                        variant="filled"
+                        onChange={onChange}
+                        value={value}
+                        disableUnderline
+                        className="form-input"
+                      >
+                        <MenuItem value={false} disabled>
+                          --Select role
+                        </MenuItem>
+                        <MenuItem value={"admin"}>Admin</MenuItem>
+                        <MenuItem value={"client"}>Client</MenuItem>
+                      </Select>
+                    )}
+                    /> */}
                   </Grid>
                 )}
               </Grid>
