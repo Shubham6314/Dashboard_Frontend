@@ -5,7 +5,6 @@ import { increment } from "../ReduxData/Slice";
 export const SuccessSnackbar = ({ snackbar, setSnackbar }) => {
   const dispatch = useDispatch();
   const count = useSelector((state) => state.snackbar.value);
-  console.log(count, "COUNT");
   const handleSnackbarClose = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -19,7 +18,6 @@ export const SuccessSnackbar = ({ snackbar, setSnackbar }) => {
       })
     );
   };
-  console.log(count);
   return (
     <Snackbar
       open={count?.state}

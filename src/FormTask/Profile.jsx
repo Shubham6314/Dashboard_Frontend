@@ -11,15 +11,14 @@ import {
 import { icons } from "./Constant";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import { BasicModal } from "./Modal";
-import axios from "axios";
-// import { userContext } from "./useContext";
 import { CustomAvatar } from "./Styled";
 import EditIcon from "@mui/icons-material/Edit";
-import { BASE_URL } from "./Constant";
 import { useDispatch } from "react-redux";
 import { increment } from "../ReduxData/Slice";
-
+import { useGetUploadImageByNameMutation } from "../services/UploadImage";
 export default function ProfileCard() {
+  const [uploadImageApi, { data, isLoading, error }] =
+    useGetUploadImageByNameMutation();
   const dispatch = useDispatch();
   const [user, setUser] = useState({});
   const [image, setimage] = useState("");
@@ -30,6 +29,15 @@ export default function ProfileCard() {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  useEffect(() => {
+    if (data) {
+      setimage(data?.img);
+      setUser({ ...user, img: data?.img });
+      console.log("Api did hit upload", data);
+    } else {
+      console.log("error in hitting the api upload");
+    }
+  }, [data, isLoading]);
 
   useEffect(() => {
     let userData = localStorage.getItem("user");
@@ -40,15 +48,7 @@ export default function ProfileCard() {
   }, [image, open]);
 
   const getData = async (data) => {
-    const response = await axios.put(`${BASE_URL}api/user/uploadimage`, data);
-    if (response) {
-      console.log(response, "response");
-      setimage(response.data.img);
-      setUser({ ...user, img: response.data.img });
-      console.log("Api did hit upload", response.data);
-    } else {
-      console.log("error in hitting the api upload");
-    }
+    uploadImageApi({ body: data });
   };
   const onlyUser = async (e) => {
     try {

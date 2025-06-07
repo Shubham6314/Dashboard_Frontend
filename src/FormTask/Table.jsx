@@ -48,9 +48,6 @@ function NavbarHome(props) {
 
   const allData = async () => {
     try {
-      // const response = await axios.get(
-      //   "http://localhost:8080/api/user/alldata"
-      // );
       fetchAllData();
     } catch (error) {
       console.log(" Error", error);
@@ -193,6 +190,7 @@ function NavbarHome(props) {
               />
             </Search>
           </Box>
+
           <Box
             sx={{
               display: "flex",

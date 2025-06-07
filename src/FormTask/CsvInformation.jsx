@@ -35,21 +35,22 @@ const CsvInformation = () => {
     handleData();
   }, []);
 
-  const handleGetCSV = async (endPoint) => {
-    await getCsvFile({ value: endPoint }).then((response) => {
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", `${endPoint}.csv`);
-      link.click();
-    });
-  };
-  const allUsers = async (e, endPoint) => {
-    e.stopPropagation();
-    try {
-      handleGetCSV(endPoint);
-    } catch (error) {}
-  };
+  // const handleGetCSV = async (endPoint) => {
+  //   await getCsvFile({ value: endPoint }).then((response) => {
+  //     console.log(response, "HELLO");
+  //     const url = window.URL.createObjectURL(new Blob([response.data]));
+  //     const link = document.createElement("a");
+  //     link.href = url;
+  //     link.setAttribute("download", `${endPoint}.csv`);
+  //     link.click();
+  //   });
+  // };
+  // const allUsers = async (e, endPoint) => {
+  //   e.stopPropagation();
+  //   try {
+  //     handleGetCSV(endPoint);
+  //   } catch (error) {}
+  // };
   return (
     <CsvWrapper>
       <CustomCard onClick={() => navigate("/dashboard")}>

@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate, Link, useLocation } from "react-router-dom";
-// import axios from "axios";
 import { useForm } from "react-hook-form";
 import {
   FormHelperText,
@@ -23,6 +22,9 @@ const defaultTheme = createTheme();
 
 export default function SignInPage() {
   const [logIn, { data, isLoading, error }] = useGetLoginByNameMutation();
+
+  console.log(data, "DATA");
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
   useEffect(() => {
@@ -43,6 +45,7 @@ export default function SignInPage() {
         let convertingJson = JSON.stringify(user);
         localStorage.setItem("token", token);
         localStorage.setItem("user", convertingJson);
+
         navigate("/dashboard");
 
         dispatch(
@@ -81,7 +84,7 @@ export default function SignInPage() {
     reset,
     watch,
   } = useForm({
-    mode: "onChange",
+    // mode: "onChange",
   });
   const onSubmit = (data) => {
     onHandleSubmit(data);
